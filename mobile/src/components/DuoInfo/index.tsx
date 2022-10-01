@@ -1,3 +1,4 @@
+import React from "react";
 import { View, Text, ColorValue } from "react-native";
 import { THEME } from "../../theme";
 
