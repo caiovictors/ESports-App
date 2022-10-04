@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Modal,
   ModalProps,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -28,15 +28,21 @@ export function DuoMatch({ discord, onClose, ...rest }: Props) {
   async function handleCopyDiscordToClipboard() {
     setIsCopying(true);
     await ClipBoard.setStringAsync(discord);
-    Alert.alert(
-      "Discord copiado!",
-      "Usuário copiado para área de transferência"
+    ToastAndroid.show(
+      "Usuário discord copiado para área de transferência",
+      ToastAndroid.SHORT
     );
     setIsCopying(false);
   }
 
   return (
-    <Modal transparent statusBarTranslucent animationType="slide" {...rest}>
+    <Modal
+      transparent
+      statusBarTranslucent
+      animationType="slide"
+      onRequestClose={onClose}
+      {...rest}
+    >
       <View style={styles.container}>
         <View style={styles.content}>
           <TouchableOpacity style={styles.closeIcon} onPress={onClose}>
