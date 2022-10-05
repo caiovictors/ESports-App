@@ -31,10 +31,11 @@ function App() {
         slides: { perView: 3, spacing: 5 },
       },
       "(min-width: 1000px)": {
-        slides: { perView: 6, spacing: 10 },
+        slides: { perView: 6, spacing: 5 },
       },
     },
-    slides: { perView: 1 },
+    slides: { perView: 5, spacing: 5 },
+    mode: "free",
   });
 
   useEffect(() => {
