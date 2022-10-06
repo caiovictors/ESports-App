@@ -11,7 +11,7 @@ interface Game {
   title: string;
 }
 
-export function CreateAdModal() {
+export function CreateAdModal({ getGames }: any) {
   const [games, setGames] = useState<Game[]>([]);
   const [weekDays, setWeekDays] = useState<string[]>([]);
   const [useVoiceChannel, setUseVoiceChannel] = useState(false);
@@ -41,6 +41,7 @@ export function CreateAdModal() {
       });
 
       alert("Anúncio criado com sucesso!");
+      getGames();
     } catch (error) {
       console.log(error);
       alert("Erro ao criar anúncio!");

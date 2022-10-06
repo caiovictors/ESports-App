@@ -26,6 +26,18 @@ app.get('/games', async (request, response) => {
   return response.json(games)
 })
 
+app.post('/games', async (request, response) => {
+  const body: any = request.body
+  const game = await prisma.game.create({
+    data: {
+      title: body.title,
+      bannerUrl: body.bannerUrl,
+    },
+  })
+
+  return response.status(201).json(game)
+})
+
 app.post('/games/:id/ads', async (request, response) => {
   const gameId = request.params.id
   const body: any = request.body
