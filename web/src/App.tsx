@@ -102,7 +102,7 @@ function App() {
       </div>
       <Dialog.Root>
         <CreateAdBanner />
-        <CreateAdModal getGames={getGames} />
+        <CreateAdModal getGames={getGames} games={games} />
       </Dialog.Root>
     </div>
   );

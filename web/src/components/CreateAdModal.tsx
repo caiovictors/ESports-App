@@ -11,14 +11,9 @@ interface Game {
   title: string;
 }
 
-export function CreateAdModal({ getGames }: any) {
-  const [games, setGames] = useState<Game[]>([]);
+export function CreateAdModal({ games, getGames }: any) {
   const [weekDays, setWeekDays] = useState<string[]>([]);
   const [useVoiceChannel, setUseVoiceChannel] = useState(false);
-
-  useEffect(() => {
-    axios("http://localhost:3333/games").then((res) => setGames(res.data));
-  }, []);
 
   async function handleCreateAd(event: FormEvent) {
     event.preventDefault();
@@ -65,13 +60,13 @@ export function CreateAdModal({ getGames }: any) {
             <select
               id="game"
               name="game"
-              className="bg-zinc-900 py-3 px-4 rounded text-sm placeholder:text-zinc-500"
+              className="bg-zinc-900 py-3 px-4 rounded outline-none text-sm scrollbar placeholder:text-zinc-500"
               defaultValue=""
             >
               <option disabled value="">
                 Selecione o game que deseja jogar
               </option>
-              {games.map((game) => (
+              {games.map((game: any) => (
                 <option key={game.id} value={game.id}>
                   {game.title}
                 </option>
