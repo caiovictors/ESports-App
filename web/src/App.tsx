@@ -39,6 +39,7 @@ function App() {
   const [infoModal, setInfoModal] = useState(defaultInfoModal);
   const [loading, setLoading] = useState(false);
 
+  const animation = { duration: 50000, easing: (t: number) => t };
   const [sliderRef] = useKeenSlider<HTMLDivElement>({
     breakpoints: {
       "(min-width: 400px)": {
@@ -48,6 +49,16 @@ function App() {
         slides: { perView: 6, spacing: 5, origin: 0 },
       },
     },
+    created(s) {
+      s.moveToIdx(5, true, animation);
+    },
+    updated(s) {
+      s.moveToIdx(s.track.details.abs + 5, true, animation);
+    },
+    animationEnded(s) {
+      s.moveToIdx(s.track.details.abs + 5, true, animation);
+    },
+    renderMode: "performance",
     slides: games.length,
     mode: "free",
   });
@@ -88,8 +99,6 @@ function App() {
   useEffect(() => {
     getGames();
   }, [getGames]);
-
-  console.log("INFO", infoModal, loading);
 
   return (
     <div className="max-w-[1344px] mx-auto flex flex-col items-center my-20">
