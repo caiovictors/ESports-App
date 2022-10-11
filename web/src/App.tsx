@@ -101,18 +101,8 @@ function App() {
   }, [getGames]);
 
   return (
-    <div className="max-w-[1344px] mx-auto flex flex-col items-center my-20">
-      <div className="flex flex-row">
-        <img src={Logo} alt="Logo" />
-      </div>
-      <h1 className="text-6xl text-white font-black mt-20">
-        Seu{" "}
-        <span className="bg-nlw-gradient bg-clip-text text-transparent">
-          duo
-        </span>{" "}
-        está aqui.
-      </h1>
-      <div className="absolute right-20">
+    <div className="max-w-[1344px] mx-auto flex flex-col items-center mb-18 mt-8">
+      <div className="flex justify-end w-full max-w-[1260px] mr-16">
         <Dialog.Root
           open={openCreateGameModal}
           onOpenChange={setOpenCreateGameModal}
@@ -129,29 +119,48 @@ function App() {
           />
         </Dialog.Root>
       </div>
-
-      <div ref={sliderRef} className="grid grid-cols-6 gap-6 mt-16 keen-slider">
-        {games.map((game) => {
-          return (
-            <GameBanner
-              key={game.id}
-              title={game.title}
-              bannerUrl={game.bannerUrl}
-              adsCount={game._count.ads}
-            />
-          );
-        })}
+      <div className="flex flex-row mt-12">
+        <img src={Logo} alt="Logo" />
       </div>
-      <Dialog.Root open={openCreateAdModal} onOpenChange={setOpenCreateAdModal}>
-        <CreateAdBanner />
-        <CreateAdModal
-          getGames={getGames}
-          games={games}
-          handleModal={() => setOpenCreateAdModal(false)}
-          handleInfoModal={setInfoModal}
-          setLoading={setLoading}
-        />
-      </Dialog.Root>
+      <h1 className="text-6xl text-white font-black mt-10 text-center">
+        Seu{" "}
+        <span className="bg-nlw-gradient bg-clip-text text-transparent">
+          duo
+        </span>{" "}
+        está aqui.
+      </h1>
+
+      <div className="flex flex-col sm:w-[90%] sm:mx-10 ">
+        <div
+          ref={sliderRef}
+          className="grid grid-cols-6 gap-6 mt-16 keen-slider"
+        >
+          {games.map((game) => {
+            return (
+              <GameBanner
+                key={game.id}
+                title={game.title}
+                bannerUrl={game.bannerUrl}
+                adsCount={game._count.ads}
+              />
+            );
+          })}
+        </div>
+
+        <Dialog.Root
+          open={openCreateAdModal}
+          onOpenChange={setOpenCreateAdModal}
+        >
+          <CreateAdBanner />
+          <CreateAdModal
+            getGames={getGames}
+            games={games}
+            handleModal={() => setOpenCreateAdModal(false)}
+            handleInfoModal={setInfoModal}
+            setLoading={setLoading}
+          />
+        </Dialog.Root>
+      </div>
       <Dialog.Root
         open={Object.values(infoModal)[0] !== ""}
         onOpenChange={() => setInfoModal(defaultInfoModal)}
