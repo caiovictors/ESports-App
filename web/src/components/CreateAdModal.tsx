@@ -11,9 +11,21 @@ interface Game {
   title: string;
 }
 
-export function CreateAdModal({ games, getGames }: any) {
+export function CreateAdModal({
+  games,
+  getGames,
+  handleModal,
+  handleInfoModal,
+  setLoading,
+}: any) {
   const [weekDays, setWeekDays] = useState<string[]>([]);
   const [useVoiceChannel, setUseVoiceChannel] = useState(false);
+
+  function cleanStates() {
+    setWeekDays([]);
+    setUseVoiceChannel(false);
+    handleModal();
+  }
 
   async function handleCreateAd(event: FormEvent) {
     event.preventDefault();
@@ -25,6 +37,7 @@ export function CreateAdModal({ games, getGames }: any) {
     }
 
     try {
+      setLoading(true);
       await axios.post(`http://localhost:3333/games/${data.game}/ads`, {
         name: data.name,
         yearsPlaying: Number(data.yearsPlaying),
@@ -34,12 +47,21 @@ export function CreateAdModal({ games, getGames }: any) {
         hourEnd: data.hourEnd,
         useVoiceChannel: useVoiceChannel,
       });
-
-      alert("Anúncio criado com sucesso!");
+      cleanStates();
       getGames();
+      handleInfoModal({
+        title: "Sucesso!",
+        message: "Anúncio cadastrado com sucesso!",
+        type: "success",
+      });
+      setLoading(false);
     } catch (error) {
-      console.log(error);
-      alert("Erro ao criar anúncio!");
+      handleInfoModal({
+        title: "Erro!",
+        message: "Ocorreu um erro ao cadastrar o anúncio",
+        type: "error",
+      });
+      setLoading(false);
     }
   }
 
@@ -47,7 +69,11 @@ export function CreateAdModal({ games, getGames }: any) {
     <Dialog.Portal>
       <Dialog.Overlay className="bg-black/60 inset-0 fixed" />
 
-      <Dialog.Content className="fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[480px] shadow-lg shadow-black/25 ">
+      <Dialog.Content
+        onPointerDownOutside={cleanStates}
+        onEscapeKeyDown={cleanStates}
+        className="fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[480px] shadow-lg shadow-black/25 "
+      >
         <Dialog.Title className="text-3xl font-black">
           Publique um anúncio
         </Dialog.Title>
@@ -214,7 +240,10 @@ export function CreateAdModal({ games, getGames }: any) {
           </label>
 
           <footer className="mt-4 flex justify-end gap-4">
-            <Dialog.Close className="bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600 hover:translate-y-1">
+            <Dialog.Close
+              className="bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600 hover:translate-y-1"
+              onClick={cleanStates}
+            >
               Cancelar
             </Dialog.Close>
             <button

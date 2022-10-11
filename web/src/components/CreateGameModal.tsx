@@ -12,7 +12,7 @@ import {
   defaultButtonBackground,
   defaultButtonStyle,
   disabledButton,
-} from "./utils";
+} from "./Utils";
 import Loader from "./Loader";
 
 const DefaultGame: NewGameProps = {
@@ -28,27 +28,22 @@ interface NewGameProps {
   slug: string;
 }
 
-export function CreateGameModal({ games, handleCreateGame }: any) {
-  let start = true;
+export function CreateGameModal({
+  games,
+  handleCreateGame,
+  handleModal,
+  handleInfoModal,
+}: any) {
   const [title, setTitle] = useState<NewGameProps["title"]>("");
-  const [bannerUrl, setBannerUrl] = useState<NewGameProps["bannerUrl"]>("");
-  const [validImage, setValidImage] = useState(true);
   const [searchGames, setSearchGames] = useState([]);
   const [loadingGame, setLoadingGame] = useState(false);
   const [selectedGame, setSelectedGame] = useState<NewGameProps>(DefaultGame);
 
   function cleanStates() {
     setTitle("");
-    setBannerUrl("");
-    setValidImage(true);
+    setSearchGames([]);
+    handleModal();
   }
-
-  useEffect(() => {
-    if (start) {
-      cleanStates();
-      start = false;
-    }
-  }, []);
 
   function CreateGame() {
     const gameExists =
@@ -56,7 +51,11 @@ export function CreateGameModal({ games, handleCreateGame }: any) {
         .length > 0;
 
     if (gameExists) {
-      alert("Já existe um jogo com esse nome!");
+      handleInfoModal({
+        title: "Erro!",
+        message: "Já existe um game cadastrado com esse título",
+        type: "error",
+      });
       return;
     }
 
@@ -66,9 +65,9 @@ export function CreateGameModal({ games, handleCreateGame }: any) {
 
   const getGameInfo = useCallback(
     async (event: any) => {
+      setLoadingGame(true);
       event.preventDefault();
       setSearchGames([]);
-      setLoadingGame(true);
 
       if (selectedGame.title !== "") {
         setSelectedGame(DefaultGame);
@@ -92,7 +91,11 @@ export function CreateGameModal({ games, handleCreateGame }: any) {
         });
         setLoadingGame(false);
       } catch (error) {
-        console.log("ERROR API", error);
+        handleInfoModal({
+          title: "Erro!",
+          message: "Ocorreu um erro ao carregar os games",
+          type: "error",
+        });
         setLoadingGame(false);
       }
     },
@@ -105,24 +108,14 @@ export function CreateGameModal({ games, handleCreateGame }: any) {
     setLoadingGame(false);
   }
 
-  // async function CreateGame(event: FormEvent) {
-  //   event.preventDefault();
-
-  //   // const gameExists =
-  //   //   games.filter((gameItem: Game) => gameItem?.title === title).length > 0;
-
-  //   // if (gameExists) {
-  //   //   alert("Já existe um jogo com esse nome!");
-  //   //   return;
-  //   // }
-
-  //   // handleCreateGame(title, bannerUrl);
-  // }
-
   return (
     <Dialog.Portal>
       <Dialog.Overlay className="bg-black/60 inset-0 fixed" />
-      <Dialog.Content className="fixed bg-[#2A2634] outline-none py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[480px] shadow-lg shadow-black/25 ">
+      <Dialog.Content
+        onPointerDownOutside={cleanStates}
+        onEscapeKeyDown={cleanStates}
+        className="fixed bg-[#2A2634] outline-none py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[480px] shadow-lg shadow-black/25 "
+      >
         <Dialog.Title className="text-3xl font-black">
           Cadastre um novo jogo
         </Dialog.Title>
@@ -187,8 +180,8 @@ export function CreateGameModal({ games, handleCreateGame }: any) {
                 <img
                   src={selectedGame.bannerUrl}
                   alt="Game Banner Preview"
-                  onError={() => setValidImage(false)}
                   className="w-full object-contain rounded-lg "
+                  loading="lazy"
                 />
               </div>
             ))
