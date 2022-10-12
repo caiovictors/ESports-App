@@ -1,6 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { CheckCircle, XCircle } from "phosphor-react";
-import { defaultButtonBackground, defaultButtonStyle } from "../Utils";
+import { COLORS, defaultButtonBackground, defaultButtonStyle } from "../Utils";
 
 interface InfoMessageProps {
   title: string;
@@ -17,9 +17,9 @@ export function InfoMessage({ title, message, type }: InfoMessageProps) {
           {title}
         </Dialog.Title>
         {type === "success" ? (
-          <CheckCircle size={120} color="#038C3E" />
+          <CheckCircle size={120} color={COLORS.GREEN} />
         ) : (
-          <XCircle size={120} className="text-red-700" />
+          <XCircle size={120} className={COLORS.RED} />
         )}
         <Dialog.Description className="mt-2 text-lg">
           {message}

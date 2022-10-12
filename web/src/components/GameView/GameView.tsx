@@ -3,11 +3,11 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 
-import { defaultButtonBackground, defaultButtonStyle } from "../Utils";
 import { AdsView } from "./AdsView/AdsView";
 
 import axios from "axios";
 import { X } from "phosphor-react";
+import Loader from "../Loader";
 
 export interface AdProps {
   ad: AdsProps;
@@ -25,6 +25,9 @@ export interface AdsProps {
 
 export function GameView({ game, open, handleModal }: any) {
   const [ads, setAds] = useState<AdsProps[]>([]);
+  const [gameInfo, setGameInfo] = useState<any>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const [sliderRef] = useKeenSlider<HTMLDivElement>({
     breakpoints: {
@@ -36,14 +39,47 @@ export function GameView({ game, open, handleModal }: any) {
     mode: "free",
   });
 
+  const getGameInfo = async () => {
+    try {
+      setTimeout(() => {
+        setLoading(false);
+      }, 5000);
+      await axios(
+        `https://api.rawg.io/api/games?key=d206b7771d2c4a538612c9922ee4785e&search=${game.title}`
+      ).then((res) => {
+        setGameInfo(res.data.results[0]);
+        setLoading(false);
+      });
+    } catch (error) {
+      setError("Não foi possível informações do game");
+    }
+  };
+
   const getAds = useCallback(async () => {
-    return await axios(`http://localhost:3333/games/${game.id}/ads`).then(
-      (res) => setAds(res.data)
-    );
+    try {
+      return await axios(`http://localhost:3333/games/${game.id}/ads`).then(
+        (res) => setAds(res.data)
+      );
+    } catch {
+      setError("Não foi possível carregar os anúncios");
+    }
   }, [setAds]);
+
+  const handleScoreStyle = () => {
+    if (gameInfo.metacritic === null) {
+      return `bg-violet-600`;
+    } else if (gameInfo.metacritic > 70) {
+      return `bg-[#038C3E]`;
+    } else if (gameInfo.metacritic > 50) {
+      return `bg-[#F2C94C]`;
+    } else {
+      return `bg-[#B91C1C]`;
+    }
+  };
 
   useEffect(() => {
     if (open) {
+      getGameInfo();
       getAds();
     }
   }, [getAds, open]);
@@ -62,35 +98,94 @@ export function GameView({ game, open, handleModal }: any) {
             src={game.bannerUrl}
           />
         </div>
-        <div className="flex flex-col justify-between py-4 w-[500px]">
-          <div>
-            <div className="flex justify-between">
-              <Dialog.Title className="text-3xl font-black">
-                {game.title}
-              </Dialog.Title>
-              <Dialog.Close className="flex flex-col">
-                <X size={32} />
-              </Dialog.Close>
-            </div>
-            <Dialog.Description className="mt-4 text-lg">
-              {ads.length ? (
-                <div>
-                  <span className="font-bold">Anúncios:</span>
-                  <div
-                    ref={sliderRef}
-                    className="flex gap-4 mt-2 overflow-auto cursor-grab active:cursor-grabbing keen-slider"
-                  >
-                    {ads.map((ad) => (
-                      <AdsView key={ad.id} ad={ad} />
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <span className="font-bold">Sem anúncios</span>
-              )}
-            </Dialog.Description>
+        {loading ? (
+          <div className="flex w-[500px]">
+            <Loader size={"lg"} />
           </div>
-        </div>
+        ) : (
+          <div className="flex flex-col justify-between py-4 w-[500px]">
+            <div>
+              <div className="flex justify-between">
+                <Dialog.Title className="text-3xl font-black">
+                  {game.title}
+                </Dialog.Title>
+                <Dialog.Close
+                  className="flex flex-col"
+                  onClick={() => setError("")}
+                >
+                  <X size={32} className="hover:text-violet-500" />
+                </Dialog.Close>
+              </div>
+              <Dialog.Description className="mt-3 text-lg">
+                {Object.values(gameInfo).length > 0 && (
+                  <>
+                    <div className="flex gap-1 mb-1 items-center flex-wrap">
+                      <div
+                        className={`h-8 w-8 flex items-center justify-center rounded-md ${handleScoreStyle()}`}
+                      >
+                        <span className="font-bold text-md">
+                          {gameInfo.metacritic || "?"}
+                        </span>
+                      </div>
+                      {`\u2022`}
+
+                      <div className="flex">
+                        {gameInfo.genres.map((genre: any, index: number) => (
+                          <span
+                            className={`whitespace-nowrap ${
+                              gameInfo.genres.length >= 4
+                                ? "text-sm"
+                                : "text-md"
+                            }`}
+                          >
+                            {genre.name}
+                            {index !== gameInfo.genres.length - 1 &&
+                              `,${`\u00A0`}`}
+                          </span>
+                        ))}
+                      </div>
+                      {`\u2022`}
+                      <span>{gameInfo.released.substr(0, 4)}</span>
+                    </div>
+                    <div className="leading-[0] mt-3">
+                      <span className="text-sm font-bold">
+                        Plataformas: {""}
+                      </span>
+                      {gameInfo.platforms.map(
+                        ({ platform }: any, index: number) => (
+                          <span className="text-sm">
+                            {platform.name}
+                            {index !== gameInfo.platforms.length - 1 && `, `}
+                          </span>
+                        )
+                      )}
+                    </div>
+                  </>
+                )}
+                {ads.length ? (
+                  <div className="mt-6">
+                    <span className="font-bold">Anúncios:</span>
+                    <div
+                      ref={sliderRef}
+                      className="flex gap-4 mt-2 overflow-auto cursor-grab active:cursor-grabbing keen-slider"
+                    >
+                      {ads.map((ad) => (
+                        <AdsView key={ad.id} ad={ad} setError={setError} />
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex justify-center items-center h-[360px]">
+                    <span className="font-bold">Sem anúncios</span>
+                  </div>
+                )}
+                {error !== "" && (
+                  <span className="flex justify-center">{error}</span>
+                )}
+              </Dialog.Description>
+            </div>
+          </div>
+        )}
       </Dialog.Content>
     </Dialog.Portal>
   );

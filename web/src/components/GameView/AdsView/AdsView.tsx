@@ -7,7 +7,7 @@ import axios from "axios";
 import { useState } from "react";
 import Loader from "../../Loader";
 
-export function AdsView({ ad }: AdProps) {
+export function AdsView({ ad }: AdProps, { setError }: any) {
   const [gettingDiscord, setGettingDiscord] = useState(false);
   const [discordCoppied, setDiscordCoppied] = useState(false);
 
@@ -23,7 +23,7 @@ export function AdsView({ ad }: AdProps) {
         }, 1500);
       });
     } catch {
-      console.log("erro");
+      setError("Ocorreu um erro ao copiar o discord");
     }
   }
 
@@ -46,7 +46,7 @@ export function AdsView({ ad }: AdProps) {
       <AdsInfos
         label="Chamada de áudio"
         value={ad.useVoiceChannel ? "Sim" : "Não"}
-        colorValue={ad.useVoiceChannel ? "text-[#038C3E]" : "text-red-700"}
+        colorValue={ad.useVoiceChannel ? `text-[#038C3E]` : `text-[#B91C1C]`}
       />
       <div className="flex items-center justify-center w-full">
         <button
