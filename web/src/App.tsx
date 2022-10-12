@@ -46,11 +46,11 @@ function App() {
         slides: { perView: 3, spacing: 5, origin: 0 },
       },
       "(min-width: 1000px)": {
-        slides: { perView: 6, spacing: 5, origin: 0 },
+        slides: { perView: 6, spacing: 1, origin: 0 },
       },
     },
     created(s) {
-      s.moveToIdx(5, true, animation);
+      s.moveToIdx(5, true);
     },
     updated(s) {
       s.moveToIdx(s.track.details.abs + 5, true, animation);
@@ -58,9 +58,9 @@ function App() {
     animationEnded(s) {
       s.moveToIdx(s.track.details.abs + 5, true, animation);
     },
-    renderMode: "performance",
     slides: games.length,
     mode: "free",
+    vertical: false,
   });
 
   async function handleCreateGame(title: string, bannerUrl: string) {
@@ -139,6 +139,7 @@ function App() {
             return (
               <GameBanner
                 key={game.id}
+                id={game.id}
                 title={game.title}
                 bannerUrl={game.bannerUrl}
                 adsCount={game._count.ads}

@@ -1,7 +1,8 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
-import { GameView } from "./GameView";
+import { GameView } from "./GameView/GameView";
 interface GameBannerProps {
+  id: string;
   bannerUrl: string;
   title: string;
   adsCount: number;
@@ -12,9 +13,11 @@ export function GameBanner(props: GameBannerProps) {
 
   return (
     <Dialog.Root open={modalOpen} onOpenChange={() => setModalOpen(false)}>
-      <Dialog.Trigger>
-        <GameView props={props} />
-      </Dialog.Trigger>
+      <GameView
+        game={props}
+        open={modalOpen}
+        handleModal={() => setModalOpen(false)}
+      />
       <div
         onClick={() => setModalOpen(true)}
         className="relative rounded-lg overflow-hidden keen-slider__slide cursor-grab active:cursor-grabbing"

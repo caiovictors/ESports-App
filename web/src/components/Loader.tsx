@@ -6,9 +6,11 @@ export default function Loader({ size = "sm" }) {
     >
       <svg
         aria-hidden="true"
-        className={`mr-2 ${
-          size === "sm" ? "w-12 h-12" : "w-48 h-48"
-        } text-gray-200 animate-spin dark:text-gray-600 fill-violet-500`}
+        className={`mr-2
+         ${size === "xsm" && "w-6 h-6"}
+         ${size === "sm" && "w-12 h-12"}
+         ${size === "lg" && "w-48 h-48"} 
+        text-gray-200 animate-spin dark:text-gray-600 fill-violet-500`}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
