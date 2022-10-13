@@ -1,5 +1,5 @@
 export const defaultButtonStyle =
-  "px-3 h-[46px] rounded-md font-semibold flex items-center gap-3";
+  "px-3 h-[46px] rounded-md font-semibold flex items-center gap-3 hover:cursor-pointer";
 
 export const defaultButtonBackground =
   "bg-violet-500 hover:bg-violet-600 hover:translate-y-1";

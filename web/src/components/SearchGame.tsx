@@ -1,6 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { MagnifyingGlass } from "phosphor-react";
-import { FormEvent, useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Game } from "../App";
 import { GameView } from "./GameView/GameView";
 import { defaultButtonBackground, defaultButtonStyle } from "./Utils";
@@ -14,16 +14,28 @@ export function SearchGame({ games }: SearchGameProps) {
   const [gameSelected, setGameSelected] = useState<Game | null>(null);
   const [open, setOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [gamesTitles, setGamesTitles] = useState<Game[] | null | undefined>();
 
-  const handleSearchGame = useCallback(
-    (event: FormEvent) => {
-      event.preventDefault();
-      setOpen(false);
+  useEffect(() => {
+    setGamesTitles(
+      games.filter(
+        (game: Game) =>
+          game.title.toLowerCase().indexOf(title.toLowerCase()) > -1
+      )
+    );
+  }, [title]);
+
+  useEffect(() => {
+    if (gameSelected) {
       setModalOpen(true);
       setTitle("");
-    },
-    [title]
-  );
+      setOpen(false);
+    }
+  }, [gameSelected]);
+
+  const clearSelectedGame = useCallback(() => {
+    setGameSelected(null);
+  }, [setGameSelected]);
 
   return (
     <>
@@ -33,11 +45,11 @@ export function SearchGame({ games }: SearchGameProps) {
             game={gameSelected}
             open={modalOpen}
             handleModal={() => setModalOpen(false)}
+            clearSelectedGame={clearSelectedGame}
           />
         </Dialog.Root>
       )}
-      <form
-        onSubmit={handleSearchGame}
+      <div
         className="flex gap-2 align-middle w-full transition duration-1000 ease-in-out"
         onMouseLeave={() => setOpen(false)}
         onMouseOver={() => setOpen(true)}
@@ -54,35 +66,33 @@ export function SearchGame({ games }: SearchGameProps) {
           />
           {title.length > 0 && (
             <div className="absolute z-auto w-[231px] max-h-60 scrollbar overflow-auto bg-zinc-900 px-4 py-2 flex flex-col gap-2">
-              {games
-                .filter(
-                  (game: Game) =>
-                    game.title.toLowerCase().indexOf(title.toLowerCase()) > -1
-                )
-                .map((item: Game) => (
+              {gamesTitles?.length ? (
+                gamesTitles?.map((item: Game) => (
                   <span
-                    onClick={(e) => {
-                      setTitle(item.title);
-                      setGameSelected(item);
-                      handleSearchGame(e);
-                    }}
+                    onClick={() => setGameSelected(item)}
                     className="text-white text-sm hover:text-violet-500 hover:cursor-pointer"
                   >
                     {item.title}
                   </span>
-                ))}
+                ))
+              ) : (
+                <span className="text-white text-sm">
+                  Nenhum game encontrado
+                </span>
+              )}
             </div>
           )}
         </div>
-        <button
-          type="submit"
-          className={`${defaultButtonStyle} ${defaultButtonBackground} `}
-          disabled={title.length === 0}
-          onClick={handleSearchGame}
-        >
-          <MagnifyingGlass className="w-6 h-6 text-white" />
-        </button>
-      </form>
+        {!open && (
+          <button
+            type="submit"
+            className={`${defaultButtonStyle} ${defaultButtonBackground} `}
+            disabled={title.length === 0}
+          >
+            <MagnifyingGlass className="w-6 h-6 text-white" />
+          </button>
+        )}
+      </div>
     </>
   );
 }

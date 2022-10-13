@@ -8,6 +8,7 @@ import { AdsView } from "./AdsView/AdsView";
 import axios from "axios";
 import { X } from "phosphor-react";
 import Loader from "../Loader";
+import { Game } from "../../App";
 export interface AdsProps {
   hourEnd: string;
   hoursStart: string;
@@ -18,7 +19,19 @@ export interface AdsProps {
   yearsPlaying: number;
 }
 
-export function GameView({ game, open, handleModal }: any) {
+interface GameViewProps {
+  game: any;
+  open: boolean;
+  handleModal: () => void;
+  clearSelectedGame?: () => void;
+}
+
+export function GameView({
+  game,
+  open,
+  handleModal,
+  clearSelectedGame = () => {},
+}: GameViewProps) {
   const [ads, setAds] = useState<AdsProps[]>([]);
   const [gameInfo, setGameInfo] = useState<any>({});
   const [loading, setLoading] = useState(true);
@@ -46,6 +59,11 @@ export function GameView({ game, open, handleModal }: any) {
       setError("Não foi possível informações do game");
       setLoading(false);
     }
+  };
+
+  const closeModal = () => {
+    clearSelectedGame();
+    handleModal();
   };
 
   const getAds = useCallback(async () => {
@@ -81,8 +99,8 @@ export function GameView({ game, open, handleModal }: any) {
     <Dialog.Portal>
       <Dialog.Overlay className="bg-black/60 inset-0 fixed" />
       <Dialog.Content
-        onPointerDownOutside={handleModal}
-        onEscapeKeyDown={handleModal}
+        onPointerDownOutside={closeModal}
+        onEscapeKeyDown={closeModal}
         className="fixed bg-[#2A2634] outline-none text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[880px] h-[500px] shadow-lg shadow-black/25 flex gap-4"
       >
         <div className="w-[350px] rounded-l-lg overflow-hidden">
