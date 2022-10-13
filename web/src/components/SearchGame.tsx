@@ -18,10 +18,12 @@ export function SearchGame({ games }: SearchGameProps) {
 
   useEffect(() => {
     setGamesTitles(
-      games.filter(
-        (game: Game) =>
-          game.title.toLowerCase().indexOf(title.toLowerCase()) > -1
-      )
+      games
+        .filter(
+          (game: Game) =>
+            game.title.toLowerCase().indexOf(title.toLowerCase()) > -1
+        )
+        .sort((a, b) => a.title.localeCompare(b.title))
     );
   }, [title]);
 
