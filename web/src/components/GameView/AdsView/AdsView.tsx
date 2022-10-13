@@ -1,13 +1,18 @@
 import { Check, GameController } from "phosphor-react";
 import { defaultButtonBackground, defaultButtonStyle } from "../../Utils";
-import { AdProps } from "../GameView";
+import { AdsProps } from "../GameView";
 import { AdsInfos } from "./AdsInfos";
 
 import axios from "axios";
 import { useState } from "react";
 import Loader from "../../Loader";
 
-export function AdsView({ ad }: AdProps, { setError }: any) {
+interface AdsViewProps {
+  ad: AdsProps;
+  setError: (error: string) => void;
+}
+
+export function AdsView({ ad, setError }: AdsViewProps) {
   const [gettingDiscord, setGettingDiscord] = useState(false);
   const [discordCoppied, setDiscordCoppied] = useState(false);
 

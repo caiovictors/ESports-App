@@ -17,6 +17,7 @@ import { CreateGameModal } from "./components/CreateGameModal";
 import { GameController } from "phosphor-react";
 import { InfoMessage } from "./components/Form/InfoMessage";
 import Loader from "./components/Loader";
+import { SearchGame } from "./components/SearchGame";
 export interface Game {
   id: string;
   title: string;
@@ -102,14 +103,15 @@ function App() {
 
   return (
     <div className="max-w-[1344px] mx-auto flex flex-col items-center mb-18 mt-8">
-      <div className="flex justify-end w-full max-w-[1260px] mr-16">
+      <div className="flex justify-between w-full max-w-[1220px] sm:px-10 xl:px-0 ">
+        <SearchGame games={games} />
         <Dialog.Root
           open={openCreateGameModal}
           onOpenChange={setOpenCreateGameModal}
         >
-          <Dialog.Trigger className="ml-20 py-3 px-4 bg-violet-500 hover:bg-violet-700 hover:translate-y-1  text-white rounded flex items-center gap-3">
+          <Dialog.Trigger className="ml-20 py-3 px-4 bg-violet-500 hover:bg-violet-700 hover:translate-y-1  text-white rounded flex items-center gap-3 w-60">
             <GameController className="w-6 h-6" />
-            Cadastrar game
+            <span className="whitespace-nowrap">Cadastrar game</span>
           </Dialog.Trigger>
           <CreateGameModal
             games={games}

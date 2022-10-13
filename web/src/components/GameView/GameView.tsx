@@ -8,11 +8,6 @@ import { AdsView } from "./AdsView/AdsView";
 import axios from "axios";
 import { X } from "phosphor-react";
 import Loader from "../Loader";
-
-export interface AdProps {
-  ad: AdsProps;
-}
-
 export interface AdsProps {
   hourEnd: string;
   hoursStart: string;
@@ -41,9 +36,6 @@ export function GameView({ game, open, handleModal }: any) {
 
   const getGameInfo = async () => {
     try {
-      setTimeout(() => {
-        setLoading(false);
-      }, 5000);
       await axios(
         `https://api.rawg.io/api/games?key=d206b7771d2c4a538612c9922ee4785e&search=${game.title}`
       ).then((res) => {
@@ -52,6 +44,7 @@ export function GameView({ game, open, handleModal }: any) {
       });
     } catch (error) {
       setError("Não foi possível informações do game");
+      setLoading(false);
     }
   };
 
@@ -105,25 +98,28 @@ export function GameView({ game, open, handleModal }: any) {
         ) : (
           <div className="flex flex-col justify-between py-4 w-[500px]">
             <div>
-              <div className="flex justify-between">
-                <Dialog.Title className="text-3xl font-black">
-                  {game.title}
-                </Dialog.Title>
-                <Dialog.Close
-                  className="flex flex-col"
-                  onClick={() => setError("")}
-                >
-                  <X size={32} className="hover:text-violet-500" />
-                </Dialog.Close>
-              </div>
-              <Dialog.Description className="mt-3 text-lg">
-                {Object.values(gameInfo).length > 0 && (
-                  <>
-                    <div className="flex gap-1 mb-1 items-center flex-wrap">
+              {Object.values(gameInfo).length > 0 && (
+                <>
+                  <div className="flex justify-between">
+                    <Dialog.Title className="text-3xl font-black">
+                      {game.title}
+                      <span className="ml-2 text-sm font-light">
+                        {gameInfo.released.substr(0, 4)}
+                      </span>
+                    </Dialog.Title>
+                    <Dialog.Close
+                      className="flex flex-col"
+                      onClick={() => setError("")}
+                    >
+                      <X size={32} className="hover:text-violet-500" />
+                    </Dialog.Close>
+                  </div>
+                  <Dialog.Description className="text-lg">
+                    <div className="flex gap-1 my-2 items-center flex-wrap">
                       <div
-                        className={`h-8 w-8 flex items-center justify-center rounded-md ${handleScoreStyle()}`}
+                        className={`h-7 w-7 flex items-center justify-center rounded-md ${handleScoreStyle()}`}
                       >
-                        <span className="font-bold text-md">
+                        <span className="font-bold text-sm">
                           {gameInfo.metacritic || "?"}
                         </span>
                       </div>
@@ -144,8 +140,6 @@ export function GameView({ game, open, handleModal }: any) {
                           </span>
                         ))}
                       </div>
-                      {`\u2022`}
-                      <span>{gameInfo.released.substr(0, 4)}</span>
                     </div>
                     <div className="leading-[0] mt-3">
                       <span className="text-sm font-bold">
@@ -160,29 +154,29 @@ export function GameView({ game, open, handleModal }: any) {
                         )
                       )}
                     </div>
-                  </>
-                )}
-                {ads.length ? (
-                  <div className="mt-6">
-                    <span className="font-bold">Anúncios:</span>
-                    <div
-                      ref={sliderRef}
-                      className="flex gap-4 mt-2 overflow-auto cursor-grab active:cursor-grabbing keen-slider"
-                    >
-                      {ads.map((ad) => (
-                        <AdsView key={ad.id} ad={ad} setError={setError} />
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex justify-center items-center h-[360px]">
-                    <span className="font-bold">Sem anúncios</span>
-                  </div>
-                )}
-                {error !== "" && (
-                  <span className="flex justify-center">{error}</span>
-                )}
-              </Dialog.Description>
+                    {ads.length ? (
+                      <div className="mt-6">
+                        <span className="font-bold">Anúncios:</span>
+                        <div
+                          ref={sliderRef}
+                          className="flex gap-4 mt-2 overflow-auto cursor-grab active:cursor-grabbing keen-slider"
+                        >
+                          {ads.map((ad) => (
+                            <AdsView key={ad.id} ad={ad} setError={setError} />
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex justify-center items-center h-[360px]">
+                        <span className="font-bold">Sem anúncios</span>
+                      </div>
+                    )}
+                    {error !== "" && (
+                      <span className="flex justify-center">{error}</span>
+                    )}
+                  </Dialog.Description>
+                </>
+              )}
             </div>
           </div>
         )}
